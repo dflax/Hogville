@@ -14,6 +14,7 @@
 		EE21911519A8A94200002108 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EE21911419A8A94200002108 /* Images.xcassets */; };
 		EE21912119A8A94200002108 /* HogvilleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE21912019A8A94200002108 /* HogvilleTests.swift */; };
 		EE21912B19A8A9B800002108 /* sprites.atlas in Resources */ = {isa = PBXBuildFile; fileRef = EE21912A19A8A9B800002108 /* sprites.atlas */; };
+		FEB0DCD21A87F8AF00718116 /* Pig.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEB0DCD11A87F8AF00718116 /* Pig.swift */; };
 		FECC195B1A87B8C30059B5CB /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = FECC195A1A87B8C30059B5CB /* README.md */; };
 /* End PBXBuildFile section */
 
@@ -39,6 +40,7 @@
 		EE21911F19A8A94200002108 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EE21912019A8A94200002108 /* HogvilleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HogvilleTests.swift; sourceTree = "<group>"; };
 		EE21912A19A8A9B800002108 /* sprites.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = sprites.atlas; sourceTree = "<group>"; };
+		FEB0DCD11A87F8AF00718116 /* Pig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Pig.swift; sourceTree = "<group>"; };
 		FECC195A1A87B8C30059B5CB /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -85,6 +87,7 @@
 				EE21910919A8A94200002108 /* AppDelegate.swift */,
 				EE21910D19A8A94200002108 /* GameScene.swift */,
 				EE21910F19A8A94200002108 /* GameViewController.swift */,
+				FEB0DCD11A87F8AF00718116 /* Pig.swift */,
 				EE21911119A8A94200002108 /* Main.storyboard */,
 				EE21912A19A8A9B800002108 /* sprites.atlas */,
 				EE21911419A8A94200002108 /* Images.xcassets */,
@@ -218,6 +221,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FEB0DCD21A87F8AF00718116 /* Pig.swift in Sources */,
 				EE21910E19A8A94200002108 /* GameScene.swift in Sources */,
 				EE21911019A8A94200002108 /* GameViewController.swift in Sources */,
 				FECC195B1A87B8C30059B5CB /* README.md in Sources */,
