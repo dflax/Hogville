@@ -8,17 +8,25 @@
 
 import SpriteKit
 
+
 class Pig: SKSpriteNode {
 	let POINTS_PER_SEC: CGFloat = 80.0
 	var wayPoints: [CGPoint] = []
 	var velocity = CGPoint(x: 0, y: 0)
+	var moveAnimation: SKAction
 
 	init(imageNamed name: String) {
 		let texture = SKTexture(imageNamed: name)
+		let textures = [SKTexture(imageNamed:"pig_1"), SKTexture(imageNamed:"pig_2"), SKTexture(imageNamed:"pig_3")]
+		moveAnimation = SKAction.animateWithTextures(textures, timePerFrame:0.1)
+
 		super.init(texture: texture, color: nil, size: texture.size())
 	}
 
 	required init?(coder aDecoder: NSCoder) {
+		let textures = [SKTexture(imageNamed:"pig_1"), SKTexture(imageNamed:"pig_2"), SKTexture(imageNamed:"pig_3")]
+		moveAnimation = SKAction.animateWithTextures(textures, timePerFrame:0.1)
+
 		super.init(coder: aDecoder)
 	}
 
@@ -29,6 +37,10 @@ class Pig: SKSpriteNode {
 	func move(dt: NSTimeInterval) {
 		let currentPosition = position
 		var newPosition = position
+
+		if(actionForKey("moveAction") == nil) {
+			runAction(moveAnimation, withKey:"moveAction")
+		}
 
 		//1
 		if wayPoints.count > 0 {
