@@ -13,7 +13,7 @@ enum ColliderType: UInt32 {
 	case Food = 2
 }
 
-class GameScene: SKScene {
+class GameScene: SKScene, SKPhysicsContactDelegate {
 
 	var movingPig: Pig?
 	var lastUpdateTime: NSTimeInterval = 0.0
@@ -62,6 +62,9 @@ class GameScene: SKScene {
 	override init(size: CGSize) {
 		super.init(size: size)
 
+		physicsWorld.gravity = CGVectorMake(0.0, 0.0)
+		physicsWorld.contactDelegate = self
+
 		// Load the background and base scene elements
 		loadLevel()
 
@@ -85,8 +88,9 @@ class GameScene: SKScene {
 		foodNode.position = CGPoint(x:250, y:200)
 		foodNode.zPosition = 1
 
-		// More code later
-
+		foodNode.physicsBody = SKPhysicsBody(rectangleOfSize: foodNode.size)
+		foodNode.physicsBody!.categoryBitMask = ColliderType.Food.rawValue
+		foodNode.physicsBody!.dynamic = false
 		addChild(foodNode)
 
 		//3
@@ -145,5 +149,33 @@ class GameScene: SKScene {
 		})
 	}
 
+	// Physics World Contact Delegate
+	func didBeginContact(contact: SKPhysicsContact) {
+		// 1
+		let firstNode = contact.bodyA.node
+		let secondNode = contact.bodyB.node
+
+		//2
+		let collision = firstNode!.physicsBody!.categoryBitMask | secondNode!.physicsBody!.categoryBitMask
+
+		//3
+		if collision == ColliderType.Animal.rawValue | ColliderType.Animal.rawValue {
+			NSLog("Animal collision detected")
+		} else if collision == ColliderType.Animal.rawValue | ColliderType.Food.rawValue {
+			NSLog("Food collision detected.")
+
+			var pig: Pig!
+
+			if firstNode!.name == "pig" {
+				pig = firstNode as Pig
+				pig.eat()
+			} else {
+				pig = secondNode as Pig
+				pig.eat()
+			}
+		} else {
+			NSLog("Error: Unknown collision category \(collision)")
+		}
+	}
 
 }

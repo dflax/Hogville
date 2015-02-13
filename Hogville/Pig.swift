@@ -15,12 +15,20 @@ class Pig: SKSpriteNode {
 	var velocity = CGPoint(x: 0, y: 0)
 	var moveAnimation: SKAction
 
+	var hungry = true
+	var eating = false
+
 	init(imageNamed name: String) {
 		let texture = SKTexture(imageNamed: name)
 		let textures = [SKTexture(imageNamed:"pig_1"), SKTexture(imageNamed:"pig_2"), SKTexture(imageNamed:"pig_3")]
 		moveAnimation = SKAction.animateWithTextures(textures, timePerFrame:0.1)
 
 		super.init(texture: texture, color: nil, size: texture.size())
+
+		physicsBody = SKPhysicsBody(circleOfRadius: size.width / 2.0)
+		physicsBody!.categoryBitMask = ColliderType.Animal.rawValue
+		physicsBody!.contactTestBitMask = ColliderType.Animal.rawValue | ColliderType.Food.rawValue
+		physicsBody!.collisionBitMask = 0
 	}
 
 	required init?(coder aDecoder: NSCoder) {
@@ -35,38 +43,56 @@ class Pig: SKSpriteNode {
 	}
 
 	func move(dt: NSTimeInterval) {
-		let currentPosition = position
-		var newPosition = position
 
-		if(actionForKey("moveAction") == nil) {
-			runAction(moveAnimation, withKey:"moveAction")
-		}
-
-		//1
-		if wayPoints.count > 0 {
-			let targetPoint = wayPoints[0]
+		if !eating {
+			let currentPosition = position
+			var newPosition = position
+			
+			if(actionForKey("moveAction") == nil) {
+				runAction(moveAnimation, withKey:"moveAction")
+			}
 
 			//1
-			let offset = CGPoint(x: targetPoint.x - currentPosition.x, y: targetPoint.y - currentPosition.y)
-			let length = Double(sqrtf(Float(offset.x * offset.x) + Float(offset.y * offset.y)))
-			let direction = CGPoint(x:CGFloat(offset.x) / CGFloat(length), y: CGFloat(offset.y) / CGFloat(length))
-			velocity = CGPoint(x: direction.x * POINTS_PER_SEC, y: direction.y * POINTS_PER_SEC)
+			if wayPoints.count > 0 {
+				let targetPoint = wayPoints[0]
 
-			//2
-			newPosition = CGPoint(x:currentPosition.x + velocity.x * CGFloat(dt), y:currentPosition.y + velocity.y * CGFloat(dt))
-			position = newPosition
+				//1
+				let offset = CGPoint(x: targetPoint.x - currentPosition.x, y: targetPoint.y - currentPosition.y)
+				let length = Double(sqrtf(Float(offset.x * offset.x) + Float(offset.y * offset.y)))
+				let direction = CGPoint(x:CGFloat(offset.x) / CGFloat(length), y: CGFloat(offset.y) / CGFloat(length))
+				velocity = CGPoint(x: direction.x * POINTS_PER_SEC, y: direction.y * POINTS_PER_SEC)
 
-			//3
-			if frame.contains(targetPoint) {
-				wayPoints.removeAtIndex(0)
+				//2
+				newPosition = CGPoint(x:currentPosition.x + velocity.x * CGFloat(dt), y:currentPosition.y + velocity.y * CGFloat(dt))
+				position = newPosition
+
+				//3
+				if frame.contains(targetPoint) {
+					wayPoints.removeAtIndex(0)
+				}
+			} else {
+				newPosition = CGPoint(x: currentPosition.x + velocity.x * CGFloat(dt),
+					y: currentPosition.y + velocity.y * CGFloat(dt))
+				//			position = newPosition
+				position = checkBoundaries(newPosition)
 			}
-		} else {
-			newPosition = CGPoint(x: currentPosition.x + velocity.x * CGFloat(dt),
-				y: currentPosition.y + velocity.y * CGFloat(dt))
-//			position = newPosition
-			position = checkBoundaries(newPosition)
+			zRotation = atan2(CGFloat(velocity.y), CGFloat(velocity.x)) + CGFloat(M_PI_2)
 		}
-		zRotation = atan2(CGFloat(velocity.y), CGFloat(velocity.x)) + CGFloat(M_PI_2)
+	}
+
+	// Move in a random direction
+	func moveRandom() {
+		//1
+		wayPoints.removeAll(keepCapacity:false)
+
+		//2
+		let width = scene!.frame.width
+		let height = scene!.frame.height
+
+		//3
+		let randomPoint = CGPoint(x:Int(arc4random_uniform(UInt32(width))), y:Int(arc4random_uniform(UInt32(height))))
+		wayPoints.append(randomPoint)
+		wayPoints.append(CGPoint(x:randomPoint.x + 1, y:randomPoint.y + 1))
 	}
 
 	func createPathToMove() -> CGPathRef? {
@@ -125,6 +151,25 @@ class Pig: SKSpriteNode {
 		return newPosition
 	}
 
+	// Pig's gotta eat!
+	func eat() {
+		//1
+		if hungry {
+
+			//2
+			removeActionForKey("moveAction")
+			eating = true
+			hungry = false
+
+			//3
+			let blockAction = SKAction.runBlock({
+				self.eating = false
+				self.moveRandom()
+			})
+
+			runAction(SKAction.sequence([SKAction.waitForDuration(1.0), blockAction]))
+		}
+	}
 
 }
 
