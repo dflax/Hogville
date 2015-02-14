@@ -18,6 +18,8 @@ class Pig: SKSpriteNode {
 	var hungry = true
 	var eating = false
 
+	var removing = false
+
 	init(imageNamed name: String) {
 		let texture = SKTexture(imageNamed: name)
 		let textures = [SKTexture(imageNamed:"pig_1"), SKTexture(imageNamed:"pig_2"), SKTexture(imageNamed:"pig_3")]
@@ -77,6 +79,9 @@ class Pig: SKSpriteNode {
 				position = checkBoundaries(newPosition)
 			}
 			zRotation = atan2(CGFloat(velocity.y), CGFloat(velocity.x)) + CGFloat(M_PI_2)
+
+			// Check if game's over because the pig is home
+			checkForHome()
 		}
 	}
 
@@ -170,6 +175,30 @@ class Pig: SKSpriteNode {
 			runAction(SKAction.sequence([SKAction.waitForDuration(1.0), blockAction]))
 		}
 	}
+
+	// Check if the pig is home - and do the animation to remove the pig
+	func checkForHome() {
+		//1
+		if hungry || removing {
+			return
+		}
+
+		//2
+		let s = scene as GameScene
+		let homeNode = s.homeNode
+
+		//3
+		if frame.intersects(homeNode.frame) {
+			removing = true
+
+			wayPoints.removeAll(keepCapacity: false)
+			removeAllActions()
+
+			//4
+			runAction(SKAction.sequence([SKAction.group([SKAction.fadeAlphaTo(0.0, duration: 0.5), SKAction.moveTo(homeNode.position, duration: 0.5)]), SKAction.removeFromParent()]))
+		}
+	}
+
 
 }
 

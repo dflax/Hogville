@@ -22,8 +22,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 	var homeNode = SKNode()
 	var currentSpawnTime: NSTimeInterval = 5.0
 
+	var gameOver = false
+
 	// Touch handling
 	override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+
+		// If the game is over, just start over.
+		if gameOver {
+			restartGame()
+		}
+
 		let location = touches.anyObject()!.locationInNode(self)
 		let node = nodeAtPoint(location)
 
@@ -47,16 +55,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
 	// Update Method
 	override func update(currentTime: CFTimeInterval) {
-		dt = currentTime - lastUpdateTime
-		lastUpdateTime = currentTime
 
-		enumerateChildNodesWithName("pig", usingBlock: {node, stop in
-			let pig = node as Pig
-			pig.move(self.dt)
-		})
+		if !gameOver {
+			dt = currentTime - lastUpdateTime
+			lastUpdateTime = currentTime
 
-		drawLines()
+			enumerateChildNodesWithName("pig", usingBlock: {node, stop in
+				let pig = node as Pig
+				pig.move(self.dt)
+			})
 
+			drawLines()
+		}
 	}
 
 	override init(size: CGSize) {
@@ -104,6 +114,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 	}
 
 	func spawnAnimal() {
+
+		// If the game is over, never mind
+		if gameOver {
+			return
+		}
+
 		//1
 		currentSpawnTime -= 0.2
 
@@ -161,6 +177,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 		//3
 		if collision == ColliderType.Animal.rawValue | ColliderType.Animal.rawValue {
 			NSLog("Animal collision detected")
+
+			// Pigs collided - handle the collision
+			handleAnimalCollision()
+
 		} else if collision == ColliderType.Animal.rawValue | ColliderType.Food.rawValue {
 			NSLog("Food collision detected.")
 
@@ -177,5 +197,47 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 			NSLog("Error: Unknown collision category \(collision)")
 		}
 	}
+
+	// When two pigs collide
+	func handleAnimalCollision() {
+		gameOver = true
+
+		let gameOverLabel = SKLabelNode(fontNamed: "Thonburi-Bold")
+		gameOverLabel.text = "Game Over!"
+		gameOverLabel.name = "label"
+		gameOverLabel.fontSize = 35.0
+		gameOverLabel.position = CGPointMake(size.width / 2.0, size.height / 2.0 + 20.0)
+		gameOverLabel.zPosition = 5
+
+		let tapLabel = SKLabelNode(fontNamed: "Thonburi-Bold")
+		tapLabel.text = "Tap to restart."
+		tapLabel.name = "label"
+		tapLabel.fontSize = 25.0
+		tapLabel.position = CGPointMake(size.width / 2.0, size.height / 2.0 - 20.0)
+		tapLabel.zPosition = 5
+
+		addChild(gameOverLabel)
+		addChild(tapLabel)
+	}
+
+	// Allow the game to restart
+	func restartGame() {
+		enumerateChildNodesWithName("line", usingBlock: {node, stop in
+			node.removeFromParent()
+		})
+
+		enumerateChildNodesWithName("pig", usingBlock: {node, stop in
+			node.removeFromParent()
+		})
+
+		enumerateChildNodesWithName("label", usingBlock: {node, stop in
+			node.removeFromParent()
+		})
+
+		currentSpawnTime = 5.0
+		gameOver = false
+		spawnAnimal()
+	}
+
 
 }
