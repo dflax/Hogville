@@ -37,6 +37,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
 		if node.name? == "pig" {
 			let pig = node as Pig
+
+			// Clear any previoius points on the path
+			pig.clearWayPoints()
+
 			pig.addMovingPoint(location)
 			movingPig = pig
 		}
@@ -133,6 +137,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 		pig.name = "pig"
 
 		addChild(pig)
+
+		pig.moveRandom()
 
 		runAction(SKAction.sequence([SKAction.waitForDuration(currentSpawnTime), SKAction.runBlock({
 			self.spawnAnimal()

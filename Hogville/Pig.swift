@@ -199,6 +199,10 @@ class Pig: SKSpriteNode {
 		}
 	}
 
+	// Deal with new paths when they come before the old one is completed
+	func clearWayPoints() {
+		wayPoints.removeAll(keepCapacity: false)
+	}
 
 }
 
