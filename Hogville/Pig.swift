@@ -184,7 +184,7 @@ class Pig: SKSpriteNode {
 		}
 
 		//2
-		let s = scene as GameScene
+		let s = scene as! GameScene
 		let homeNode = s.homeNode
 
 		//3

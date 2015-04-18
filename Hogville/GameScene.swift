@@ -25,18 +25,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 	var gameOver = false
 
 	// Touch handling
-	override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+	override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
 
 		// If the game is over, just start over.
 		if gameOver {
 			restartGame()
 		}
 
-		let location = touches.anyObject()!.locationInNode(self)
+		let aTouch = touches.first as! UITouch
+		let location = aTouch.locationInNode(scene)
+
+//		let location = touches.first().locationInNode(self)
 		let node = nodeAtPoint(location)
 
-		if node.name? == "pig" {
-			let pig = node as Pig
+		if node.name == "pig" {
+			let pig = node as! Pig
 
 			// Clear any previoius points on the path
 			pig.clearWayPoints()
@@ -46,14 +49,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 		}
 	}
 
-	override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
-		let location = touches.anyObject()!.locationInNode(scene)
+	override func touchesMoved(touches: Set<NSObject>, withEvent event: UIEvent) {
+
+		let aTouch = touches.first as! UITouch
+		let location = aTouch.locationInNode(scene)
 		if let pig = movingPig {
 			pig.addMovingPoint(location)
 		}
 	}
 
-	override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
+	override func touchesEnded(touches: Set<NSObject>, withEvent event: UIEvent) {
 		movingPig = nil
 	}
 
@@ -65,7 +70,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 			lastUpdateTime = currentTime
 
 			enumerateChildNodesWithName("pig", usingBlock: {node, stop in
-				let pig = node as Pig
+				let pig = node as! Pig
 				pig.move(self.dt)
 			})
 
@@ -157,7 +162,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 		enumerateChildNodesWithName("pig", usingBlock: {node, stop in
 
 			//3
-			let pig = node as Pig
+			let pig = node as! Pig
 			if let path = pig.createPathToMove() {
 				let shapeNode = SKShapeNode()
 				shapeNode.path = path
@@ -193,10 +198,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 			var pig: Pig!
 
 			if firstNode!.name == "pig" {
-				pig = firstNode as Pig
+				pig = firstNode as! Pig
 				pig.eat()
 			} else {
-				pig = secondNode as Pig
+				pig = secondNode as! Pig
 				pig.eat()
 			}
 		} else {
